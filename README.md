@@ -42,6 +42,7 @@
   | `viz_patches.py` | Visualize tumor-center patches with mask overlay for the first N patients |
 
   ## Preprocessing:
+  
   Step1_regis_resam_CT_PET.py       — Register PET to CT, resample to CT spacing (DCM → NII)
   Step2_add_downsample_CT.py        — Downsample CT+PET NII to uniform spacing 0.9766×3mm (NII → NII+NPY)
   Step3_convert_contour2mask.py     — Convert RT structure contours to binary mask NII (DCM → NII)
