@@ -1,0 +1,186 @@
+\documentclass[a4paper]{article}
+%\usepackage{simplemargins}
+
+%\usepackage[square]{natbib}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage{xcolor}
+\usepackage{placeins}
+
+\usepackage[
+  top=1in,
+  bottom=1in,
+  left=1.25in,
+  right=1.25in
+]{geometry}
+
+\begin{document}
+\pagenumbering{gobble}
+
+\Large
+ \begin{center}
+A multimodal spatial-attention multiple-instance learning method for cervical cancer recurrence prediction on pretreatment planning CT and PET imaging data\\ 
+
+\hspace{10pt}
+
+% Author names and affiliations
+\large
+Jialin Yue$^{a}$, Zong Fan$^{b}$, Hua Li$^{a,b}$*\\
+\normalsize
+$^{a}$ Department of Radiation Oncology, Washington University in St. Louis, St. Louis, MO, United States\\
+$^{b}$ Department of Bioengineering, University of Illinois Urbana-Champaign, Urbana, IL, United States\\
+\footnotesize *Corresponding author: hua.li@wustl.edu
+
+\hspace{10pt}
+
+
+
+\end{center}
+
+\hspace{10pt}
+
+\textbf{Introduction:} Accurate prediction of cervical cancer recurrence using pre-radiotherapy imaging is critical for optimizing treatment planning and risk stratification to facilitate personalized therapeutic strategies. 
+While integrating multimodal data, such as planning CT and PET, significantly enhances predictive power over single-modality approaches, it introduces substantial technical challenges. 
+Specifically, multimodal datasets often exhibit protocol variability across clinical sites, subtle prognostic features that are easily overlooked, and missing modalities where patients may lack either the PET or CT component.
+To address these limitations, multimodal AI-driven approaches, particularly Multiple-Instance Learning (MIL), offer a promising methodology for robust local information aggregation. 
+In this work, we propose a tumor-neighborhood spatial-attention MIL approach designed to improve outcome prediction by processing multiple overlapping subvolumes from the tumor and its neighboring area. 
+This methodology reduces sensitivity to local nuisance variations and modality incompleteness while preserving the essential information provided by PET/CT. 
+Furthermore, our model offers inherent interpretability through learned attention weights, allowing for the evidence-based identification of specific tumor-neighborhood areas that most significantly contribute to the patient-level recurrence prediction.
+
+%local infomation/knowledge
+\textbf{Method:}
+We propose a tumor-neighborhood spatial-attention MIL model that characterizes the tumor and its surrounding environment through the extraction of multiple 3D subvolumes from planning CT and PET. 
+The model architecture consists of: (1) dual modality-specific DLA3D (Deep Layer Aggregation 3D) encoders optimized to learn high-dimensional local feature representations from CT and PET subvolumes, 
+and (2) a gated-attention MIL pooling module that dynamically aggregates information across multiple tumor-neighborhood regions to generate a global feature for patient-level prediction, thus improving overall prediction accuracy. 
+Additionally, this modular feature extraction and flexible fusion architecture enable the model to process available input sources effectively while maintaining robustness in the presence of missing modalities.
+
+To enable model interpretability for transparency in medical AI, the gated-attention mechanism assigns localized importance scores to each tumor-neighborhood subvolume, 
+representing its relative contribution to the final recurrence prediction. 
+This way, these weights are utilized to identify highly informative regions within the multimodal space. 
+We validate the clinical relevance of these attention-derived importance through an ablation study, where the top-ranked subvolumes (Top-3) are selectively removed at inference. 
+By re-evaluating model performance post-removal, we quantify the performance drop in predictive probability (Fig.~\ref{fig:top3_removal}); 
+a substantial decrease in confidence indicates that the attention mechanism has successfully localized the most significant prognostic cues within the tumor-neighborhood.
+
+
+\textbf{Results:}
+ patient dataset. In our work, we frame recurrence outcome prediction as a binary classification task (recurrent vs non-recurrent). Using five-fold cross-validation, mean AUC improved from 0.672 to 0.713 (+0.041), and mean accuracy improved from 0.572 to 0.666 (+0.094). Specificity increased from 0.485 to 0.696 (+0.211), while sensitivity decreased from 0.715 to 0.627 (-0.088). Mean FP decreased from 15.2 to 9.2 (-6.0), and mean FN increased from 4.8 to 6.2 (+1.4) (Table~\ref{tab:mil_cv_results}). For (what?)interpretability, we conducted a Top-3 patch removal test on two folds: fold1 with the highest AUC showed marginal significance(what for) ($p=0.051$), and fold4 with the largest overall metric gain showed statistical significance ($p<0.05$) (Fig.~\ref{fig:top3_removal}).
+
+\textbf{Conclusions:}
+Our approach incorporates a registered planning CT + PET baseline with a lightweight MIL attention pooling module to reduce reliance on a single tumor-centered view and improve robustness under lesion heterogeneity and structured nuisance signals. By aggregating evidence from multiple tumor-neighborhood subvolumes, the model achieves improved outcome prediction performance. In addition, the attention pooling weights provide instance-level interpretability by ranking informative patches, and this evidence ranking is supported by our top-ranked patch removal analysis.
+
+\textbf{Potential impacts:}
+Our method provides a lightweight path toward more robust pelvic PET/CT outcome prediction, with potential extensions to cross-site generalization, richer region design and weakly supervised ROI learning, and controlled fusion of additional modalities. It also offers a new interpretability angle for PET/CT through instance-level evidence ranking.
+
+% in preamble:
+% \usepackage{booktabs}
+% \usepackage{adjustbox}
+
+\FloatBarrier
+\newpage
+\thispagestyle{plain}
+
+\begin{center}
+{\large\bfseries Supplementary Page}
+\end{center}
+\vspace{-0.2em}
+
+\FloatBarrier  % 防止下面的 floats 跑到标题上面
+
+
+\begin{table}[!h]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{2.8pt}
+\renewcommand{\arraystretch}{1.12}
+
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{l *{16}{c}}
+\toprule
+ & \multicolumn{2}{c}{AUC}
+ & \multicolumn{2}{c}{TP}
+ & \multicolumn{2}{c}{TN}
+ & \multicolumn{2}{c}{FP}
+ & \multicolumn{2}{c}{FN}
+ & \multicolumn{2}{c}{Sensitivity}
+ & \multicolumn{2}{c}{Specificity}
+ & \multicolumn{2}{c}{Accuracy} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+\cmidrule(lr){10-11}\cmidrule(lr){12-13}\cmidrule(lr){14-15}\cmidrule(lr){16-17}
+Fold & w/o & w/ & w/o & w/ & w/o & w/ & w/o & w/ & w/o & w/ & w/o & w/ & w/o & w/ & w/o & w/ \\
+\midrule
+1 & 0.739 & \textbf{0.772}
+  & 10 & 9
+  & 20 & 19
+  & 11 & 12
+  & 2 & 3
+  & \textbf{0.833} & 0.750
+  & \textbf{0.645} & 0.613
+  & \textbf{0.698} & 0.651 \\
+2 & 0.666 & \textbf{0.763}
+  & 17 & 13
+  & 8 & 20
+  & 18 & 6
+  & 2 & 6
+  & \textbf{0.895} & 0.684
+  & 0.308 & \textbf{0.769}
+  & 0.556 & \textbf{0.733} \\
+3 & \textbf{0.734} & 0.704
+  & 10 & 5
+  & 17 & 22
+  & 10 & 5
+  & 6 & 11
+  & \textbf{0.625} & 0.313
+  & 0.630 & \textbf{0.815}
+  & \textbf{0.628} & 0.628 \\
+4 & 0.595 & \textbf{0.658}
+  & 10 & 12
+  & 13 & 22
+  & 18 & 9
+  & 8 & 6
+  & 0.556 & \textbf{0.667}
+  & 0.419 & \textbf{0.710}
+  & 0.469 & \textbf{0.694} \\
+5 & 0.626 & \textbf{0.670}
+  & 12 & 13
+  & 14 & 19
+  & 19 & 14
+  & 6 & 5
+  & 0.667 & \textbf{0.722}
+  & 0.424 & \textbf{0.576}
+  & 0.510 & \textbf{0.627} \\
+\midrule
+Mean & 0.672 & \textcolor{blue}{\textbf{0.713}}
+     & \multicolumn{2}{c}{--}
+     & \multicolumn{2}{c}{--}
+     & \multicolumn{2}{c}{--}
+     & \multicolumn{2}{c}{--}
+     & \textcolor{blue}{\textbf{0.715}} & 0.627
+     & 0.485 & \textcolor{blue}{\textbf{0.696}}
+     & 0.572 & \textcolor{blue}{\textbf{0.666}} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\caption{Five-fold performance comparison between models trained without and with MIL. For AUC, sensitivity, specificity, and accuracy, the better value within each fold is highlighted in bold; the better mean value is highlighted in blue. Confusion-matrix counts are omitted for the mean row.}
+\label{tab:mil_cv_results}
+\end{table}
+\vspace{-1.0em}
+
+
+\begin{figure}[!h]
+  \centering
+  \includegraphics[width=\linewidth]{fold1_fold4_top3remove.pdf}
+  \caption{Ablation-based interpretability via Top-3 patch removal. Left: the fold achieving the highest AUC (Mann--Whitney $p=0.051$). Right: the fold with the largest overall metric gain (Mann--Whitney $p<0.001$).
+For each patient, we rank tumor-neighborhood subvolumes by MIL attention weights and remove the Top-3 ranked patches at inference.
+The y-axis shows the log-odds drop, $\Delta=\mathrm{logit}(p_{\text{base}})-\mathrm{logit}(p_{\text{removed}})$, measuring the decrease in predicted probability after removal.
+The x-axis compares cases whose removed Top-3 patches have high versus low within-patch intensity standard deviation (STD), defined by tertiles across patients (top vs bottom tertile).}
+ 
+  \label{fig:top3_removal}
+\end{figure}
+
+
+
+\end{document}
